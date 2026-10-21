@@ -9,6 +9,174 @@
 
 - Long Method
 - Duplicated Code
+
+## Long Method
+
+### Introduction
+
+A **Long Method** is a method or function that contains too much code or performs too many tasks. It often happens when developers continue adding new functionality to an existing function instead of dividing the work into smaller, more focused functions.
+
+For example, a checkout function might calculate the total price, apply discounts, calculate taxes, and print a receipt all in one place.
+
+### Why Is It a Problem?
+
+- **Harder to understand:** A long function can be difficult to read and understand.
+- **Difficult to maintain:** Changing one part of the function may affect other parts.
+- **Harder to test:** A function that performs many tasks can be difficult to test independently.
+- **Code duplication:** Developers may copy parts of a long function instead of extracting reusable logic.
+
+### Prevention and Refactoring
+
+Keep functions focused on a single responsibility. When a function becomes too long or contains several distinct steps, consider extracting those steps into smaller functions with clear names.
+
+One of Fowler's refactoring patterns is **Extract Function**. It moves a group of statements into a new function and replaces those statements with a function call.
+
+However, function length alone does not determine whether a method is problematic. The main goal is to make the code easier to understand and maintain.
+
+### Example 1: Python
+
+This example calculates the final price of an order and prints a receipt.
+
+#### Before Refactoring
+
+```python
+def checkout(price, quantity):
+    subtotal = price * quantity
+    discount = 0
+
+    if subtotal >= 100:
+        discount = subtotal * 0.1
+
+    discounted_total = subtotal - discount
+    tax = discounted_total * 0.08
+    final_total = discounted_total + tax
+
+    print("Subtotal:", subtotal)
+    print("Discount:", discount)
+    print("Tax:", tax)
+    print("Final total:", final_total)
+
+    return final_total
+
+checkout(60, 2)
+```
+
+The `checkout()` function calculates the subtotal, applies a discount, calculates tax, prints the receipt, and returns the final price. Having all these steps in one function makes it harder to understand and modify individual parts.
+
+#### After Refactoring
+
+```python
+def calculate_subtotal(price, quantity):
+    return price * quantity
+
+
+def apply_discount(subtotal):
+    if subtotal >= 100:
+        return subtotal * 0.9
+    return subtotal
+
+
+def calculate_tax(amount):
+    return amount * 0.08
+
+
+def print_receipt(subtotal, discount, tax, final_total):
+    print("Subtotal:", subtotal)
+    print("Discount:", discount)
+    print("Tax:", tax)
+    print("Final total:", final_total)
+
+
+def checkout(price, quantity):
+    subtotal = calculate_subtotal(price, quantity)
+    discounted_total = apply_discount(subtotal)
+    discount = subtotal - discounted_total
+    tax = calculate_tax(discounted_total)
+    final_total = discounted_total + tax
+
+    print_receipt(subtotal, discount, tax, final_total)
+    return final_total
+
+
+checkout(60, 2)
+```
+
+Using **Extract Function**, we divided the checkout process into smaller functions, each with a clear purpose. The `checkout()` function now describes the overall process, while the details are handled by separate functions.
+
+The calculation and output remain the same, but the code is easier to read, test, and maintain.
+
+### Example 2: JavaScript
+
+This example performs the same checkout process using JavaScript.
+
+#### Before Refactoring
+
+```javascript
+function checkout(price, quantity) {
+    const subtotal = price * quantity;
+    let discount = 0;
+
+    if (subtotal >= 100) {
+        discount = subtotal * 0.1;
+    }
+
+    const discountedTotal = subtotal - discount;
+    const tax = discountedTotal * 0.08;
+    const finalTotal = discountedTotal + tax;
+
+    console.log("Subtotal:", subtotal);
+    console.log("Discount:", discount);
+    console.log("Tax:", tax);
+    console.log("Final total:", finalTotal);
+
+    return finalTotal;
+}
+
+checkout(60, 2);
+```
+
+The function handles several different tasks, making it longer and harder to maintain.
+
+#### After Refactoring
+
+```javascript
+function calculateSubtotal(price, quantity) {
+    return price * quantity;
+}
+
+function applyDiscount(subtotal) {
+    return subtotal >= 100 ? subtotal * 0.9 : subtotal;
+}
+
+function calculateTax(amount) {
+    return amount * 0.08;
+}
+
+function printReceipt(subtotal, discount, tax, finalTotal) {
+    console.log("Subtotal:", subtotal);
+    console.log("Discount:", discount);
+    console.log("Tax:", tax);
+    console.log("Final total:", finalTotal);
+}
+
+function checkout(price, quantity) {
+    const subtotal = calculateSubtotal(price, quantity);
+    const discountedTotal = applyDiscount(subtotal);
+    const discount = subtotal - discountedTotal;
+    const tax = calculateTax(discountedTotal);
+    const finalTotal = discountedTotal + tax;
+
+    printReceipt(subtotal, discount, tax, finalTotal);
+    return finalTotal;
+}
+
+checkout(60, 2);
+```
+
+The refactored version separates the calculations and receipt printing into smaller functions. The main `checkout()` function is now easier to follow, and each helper function can be tested independently.
+
+These examples use the same pricing rules before and after refactoring, so the final result remains unchanged.
+
 ## Duplicated Code
 
 ### Introduction
